@@ -17,26 +17,23 @@ app.use(helmet());
 // dbconn
 import './dbconn';
 
-app.use('/', (req, res, next) => {
-    let err = new Error();
-    err.message = `For outside message`;
-    err.intmsg = `Some internal message`;
-    err.status = 404;
-
-    throw err;
-});
+// router
+app.use('/auth', require('./auth/authRouter').default);
 
 // end point for error handling
-app.use('/', (err, req, res, next) => {
-    logger.error(err.message, {
-        method: req.method,
-        url: req.url,
-        intmsg: err.intmsg
-    });
-    
-    res.status(err.status).json({
-        message: err.message
-    });
+app.use((err, req, res, next) => {
+    if (err) {
+        if (!err.status) err.status = 500;
+
+        logger.error(err.message, {
+            request: `${req.method} ${req.originalUrl}`,
+            intmsg: err.intmsg
+        });
+        
+        res.status(err.status).json({
+            message: err.message
+        });
+    }
 });
 
 export default app;

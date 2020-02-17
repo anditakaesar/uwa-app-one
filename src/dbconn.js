@@ -20,4 +20,6 @@ const connection = connect(FULLURI, mongoOpts,
     }
 );
 
+export const dbconn = require('mongoose').connection;
+
 export default connection;
