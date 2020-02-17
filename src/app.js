@@ -4,6 +4,12 @@ import compression from 'compression';
 import cors from 'cors';
 import { json, urlencoded } from 'body-parser';
 import logger from './logger';
+import session from 'express-session';
+import { dbconn } from './dbconn';
+import env from './env';
+
+// dbconn
+import './dbconn';
 
 const app = express();
 
@@ -14,8 +20,16 @@ app.use(cors());
 app.use(urlencoded({ extended: true }));
 app.use(helmet());
 
-// dbconn
-import './dbconn';
+// session
+const MongoStore = require('connect-mongo')(session);
+app.use(session({
+    name: env.SESSION_NAME,
+    secret: env.COOKIES_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    cookie: { maxAge: env.COOKIES_AGESEC * 1000, secure: env.COOKIES_SECURE },
+    store: new MongoStore({ mongooseConnection: dbconn })
+}));
 
 // router
 app.use('/auth', require('./auth/authRouter').default);

@@ -2,7 +2,6 @@ import { Router } from 'express';
 import passport, { strategy } from './passport';
 import jwt from 'jsonwebtoken';
 import env from '../env';
-import logger from '../logger';
 import { keys } from './signopt';
 import { dbconn } from '../dbconn';
 
@@ -11,11 +10,11 @@ let error = new Error();
 
 function genToken(payload) {
     let signOptions = {
-        expiresIn: env.JWT_EXPSEC,
-        algorithm: 'HS256'
+        expiresIn: "12h",
+        algorithm: "HS256"
     }
 
-    let token = jwt.sign(payload, keys.private.trim(), signOptions);
+    let token = jwt.sign(payload, keys.public, signOptions);
     return token;
 }
 
@@ -71,7 +70,7 @@ router.post('/signup',
                 }
 
                 let userPayload = genPayload(user);
-                res.send({
+                res.status(200).json({
                     success: true,
                     message: `User success signup and loggedin`,
                     user: userPayload,
@@ -80,6 +79,49 @@ router.post('/signup',
             });
         }
     })(req, res, next);
+});
+
+router.post('/login', (req, res, next) => {
+    passport.authenticate(strategy.LOCAL_LOGIN, 
+    (err, user, info) => { // user -> found user, correct password
+        if (err) next(err);
+        if (!user) {
+            next({ message: info.message });
+        } else { // user found
+            req.login(user, err => {
+                if (err) next(err);
+                let userPayload = genPayload(user);
+                res.status(200).json({
+                    success: true,
+                    message: `User success login`,
+                    user: userPayload,
+                    token: genToken(userPayload)
+                });
+            });
+        }
+        
+    })(req, res, next);
+});
+
+router.get('/verify', passport.authenticate(strategy.JWT_LOGIN, {
+    successRedirect: 'verify/success',
+    failureRedirect: 'verify/fail'
+}));
+
+router.get('/verify/success', (req, res, next) => {
+    res.status(200).json({
+        success: true,
+        message: 'token verified',
+        verified: true
+    });
+});
+
+router.get('/verify/fail', (req, res, next) => {
+    res.status(200).json({
+        success: true,
+        message: 'token expired',
+        verified: false
+    });
 });
 
 export default router;

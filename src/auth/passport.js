@@ -1,11 +1,12 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy } from 'passport-jwt';
+import { Strategy as CustomStrategy } from 'passport-custom';
 import { ExtractJwt } from 'passport-jwt';
 import { keys } from './signopt';
 import logger from '../logger';
-import env from '../env';
 import User from '../user/userModel';
+import jwt from 'jsonwebtoken';
 
 export const strategy = {
     LOCAL_LOGIN: `local-login`,
@@ -111,10 +112,11 @@ new LocalStrategy(
 
 var jwtparams = {
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: keys.public
+    secretOrKey: keys.private,
+    algorithm: ["HS256"]
 };
 
-passport.use(strategy.JWT_LOGIN, 
+passport.use('test', 
 new JwtStrategy(
     jwtparams,
     (jwtPayload, next) => {
@@ -125,6 +127,15 @@ new JwtStrategy(
         };
 
         next(null, user);
+    }
+));
+
+passport.use(strategy.JWT_LOGIN,
+new CustomStrategy(
+    (req, next) => {
+        console.log(req.headers.authorization);
+        console.log(jwt.verify(req.headers.authorization, keys.public, { algorithms: "HS256" }));
+        next();
     }
 ));
 
