@@ -14,6 +14,9 @@ app.use(cors());
 app.use(urlencoded({ extended: true }));
 app.use(helmet());
 
+// dbconn
+import './dbconn';
+
 app.use('/', (req, res, next) => {
     let err = new Error();
     err.message = `For outside message`;
