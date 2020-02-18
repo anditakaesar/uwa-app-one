@@ -2,7 +2,7 @@
   "name": "uwa-app-one",
   "version": "0.1.0",
   "description": "a backend of anything",
-  "main": "index.js",
+  "main": "./build/index.js",
   "repository": "https://github.com/anditakaesar/uwa-app-one.git",
   "author": "Andita Kaesar <anditakaesar@gmail.com>",
   "license": "MIT",
@@ -38,6 +38,8 @@
   },
   "scripts": {
     "start:dev": "npx nodemon -r ./node_modules/dotenv/config --exec ./node_modules/.bin/babel-node ./src/index.js",
-    "build": "npx babel ./src -d ./build"
+    "build": "npx babel ./src -d ./build",
+    "start": "node ./build/index.js",
+    "genkeys": "openssl genpkey -algorithm RSA -out private.key -pkeyout rsa_keygen_bits:4096 && openssl rsa -pubout -in private.key -out public.key"
   }
 }
