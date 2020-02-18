@@ -29,7 +29,8 @@
     "passport": "^0.4.1",
     "passport-custom": "^1.1.1",
     "passport-local": "^1.0.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "winston-loggly-bulk": "^3.0.1"
   },
   "babel": {
     "presets": [
@@ -40,6 +41,6 @@
     "start:dev": "npx nodemon -r ./node_modules/dotenv/config --exec ./node_modules/.bin/babel-node ./src/index.js",
     "build": "npx babel ./src -d ./build",
     "start": "node ./build/index.js",
-    "genkeys": "openssl genpkey -algorithm RSA -out private.key -pkeyout rsa_keygen_bits:4096 && openssl rsa -pubout -in private.key -out public.key"
+    "genkeys": "openssl genpkey -algorithm RSA -out private.key -pkeyopt rsa_keygen_bits:4096 && openssl rsa -pubout -in private.key -out public.key"
   }
 }
