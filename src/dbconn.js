@@ -21,5 +21,15 @@ const connection = connect(FULLURI, mongoOpts,
 );
 
 export const dbconn = require('mongoose').connection;
+export const checkDbReady = (req, res, next) => {
+    if (dbconn.readyState) {
+        next();
+    } else {
+        error.message = `Database not ready`;
+        error.request = `${req.method} ${req.originalUrl}`;
+        error.status = 500;
+        next(error);
+    }
+}
 
 export default connection;

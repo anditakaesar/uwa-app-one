@@ -1,8 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as CustomStrategy } from 'passport-custom';
-import { ExtractJwt } from 'passport-jwt';
 import { keys } from './signopt';
 import logger from '../logger';
 import User from '../user/userModel';
@@ -29,6 +27,8 @@ passport.deserializeUser((user, next) => {
     next(null, newUser);
 });
 
+let error = new Error(`user not found or wrong password!`);
+
 // STRATEGIES
 passport.use(strategy.LOCAL_LOGIN,
 new LocalStrategy(
@@ -38,8 +38,6 @@ new LocalStrategy(
         passReqToCallback: true
     },
     (req, username, password, next) => {
-        let message = `user not found or wrong password!`;
-
         process.nextTick(() => {
             User.findOne({ username: username }, (err, user) => {
                 if (err) {
@@ -47,7 +45,7 @@ new LocalStrategy(
                 }
 
                 if (!user) {
-                    next(null, false, { message: message });
+                    next(null, false, { message: error.message });
 
                 } else { // user found
                     if (user.active) { // check if user is active (not locked)
@@ -58,14 +56,13 @@ new LocalStrategy(
                             
                             logger.info(`success login`, { intmsg: strategy.LOCAL_LOGIN, request: `${req.method} ${req.originalUrl}`, username: user.username });
                             next(null, user);
-                        } else { // wrong password
-                            
-                            next(null, false, { message: message });
+                        } else { // wrong password                            
+                            next(null, false, { message: error.message });
                         }
 
                     } else { // user is locked
                         logger.error(`locked user access attempt`, { intmsg: strategy.LOCAL_LOGI, request: `${req.method} ${req.originalUrl}`, username: user.username });
-                        next(null, false, { message: message });
+                        next(null, false, { message: error.message });
                     }
                 }
 
@@ -110,32 +107,25 @@ new LocalStrategy(
     }
 )); // local-signup
 
-var jwtparams = {
-    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: keys.private,
-    algorithm: ["HS256"]
-};
-
-passport.use('test', 
-new JwtStrategy(
-    jwtparams,
-    (jwtPayload, next) => {
-        var user = {
-            id: jwtPayload.id,
-            username: jwtPayload.username,
-            email: jwtPayload.email
-        };
-
-        next(null, user);
-    }
-));
-
 passport.use(strategy.JWT_LOGIN,
 new CustomStrategy(
     (req, next) => {
-        console.log(req.headers.authorization);
-        console.log(jwt.verify(req.headers.authorization, keys.public, { algorithms: "HS256" }));
-        next();
+        process.nextTick(() => {
+            jwt.verify(req.headers.authorization, keys.public, { algorithms: "HS256" }, 
+            (err, decoded) => {
+                if (err) {
+                    next(null, false, { message: err.message });
+                } else {
+                    let user = {
+                        id: decoded.id,
+                        username: decoded.username,
+                        email: decoded.email
+                    }
+                    next(null, user);
+                }
+            });
+        })
+        
     }
 ));
 

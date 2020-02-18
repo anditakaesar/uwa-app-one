@@ -3,14 +3,14 @@ import passport, { strategy } from './passport';
 import jwt from 'jsonwebtoken';
 import env from '../env';
 import { keys } from './signopt';
-import { dbconn } from '../dbconn';
+import { checkDbReady } from '../dbconn';
 
 const router = Router();
 let error = new Error();
 
 function genToken(payload) {
     let signOptions = {
-        expiresIn: "12h",
+        expiresIn: env.JWT_EXPSEC,
         algorithm: "HS256"
     }
 
@@ -33,16 +33,7 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 // check db connection
-router.use((req, res, next) => {
-    if (dbconn.readyState) {
-        next();
-    } else {
-        error.message = `Database not ready`;
-        error.request = `${req.method} ${req.originalUrl}`;
-        error.status = 500;
-        next(error);
-    }
-});
+router.use(checkDbReady);
 
 router.post('/signup', 
 // passport.authenticate(strategy.JWT_LOGIN), 
@@ -71,7 +62,6 @@ router.post('/signup',
 
                 let userPayload = genPayload(user);
                 res.status(200).json({
-                    success: true,
                     message: `User success signup and loggedin`,
                     user: userPayload,
                     token: genToken(userPayload)
@@ -92,7 +82,6 @@ router.post('/login', (req, res, next) => {
                 if (err) next(err);
                 let userPayload = genPayload(user);
                 res.status(200).json({
-                    success: true,
                     message: `User success login`,
                     user: userPayload,
                     token: genToken(userPayload)
@@ -110,7 +99,6 @@ router.get('/verify', passport.authenticate(strategy.JWT_LOGIN, {
 
 router.get('/verify/success', (req, res, next) => {
     res.status(200).json({
-        success: true,
         message: 'token verified',
         verified: true
     });
@@ -118,7 +106,6 @@ router.get('/verify/success', (req, res, next) => {
 
 router.get('/verify/fail', (req, res, next) => {
     res.status(200).json({
-        success: true,
         message: 'token expired',
         verified: false
     });
