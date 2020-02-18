@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken';
 import env from '../env';
 import { keys } from './signopt';
 import { checkDbReady } from '../dbconn';
+import { genError } from '../utils';
 
 const router = Router();
-let error = new Error();
 
 function genToken(payload) {
     let signOptions = {
@@ -28,10 +28,6 @@ function genPayload(user) {
     return userPayload;
 }
 
-// initialize passport
-router.use(passport.initialize());
-router.use(passport.session());
-
 // check db connection
 router.use(checkDbReady);
 
@@ -41,11 +37,7 @@ router.post('/signup',
     passport.authenticate(strategy.LOCAL_SIGNUP, 
     (err, user, info) => { // user -> newUser created
         if (err) {
-            error.message = `error while signing up`;
-            error.status = 500;
-            error.intmsg = err.message;
-
-            next(err);
+            next(genError(`error while signing up`, err.message));
         }
 
         if (!user) {
@@ -53,11 +45,7 @@ router.post('/signup',
         } else { // successful created, try-login
             req.logIn(user, (err) => {
                 if (err) {
-                    error.message = `error while signing up`;
-                    error.status = 500;
-                    error.intmsg = err.message;
-
-                    next(err);
+                    next(genError(`error while signing up`, err.message));
                 }
 
                 let userPayload = genPayload(user);
@@ -79,7 +67,10 @@ router.post('/login', (req, res, next) => {
             next({ message: info.message });
         } else { // user found
             req.login(user, err => {
-                if (err) next(err);
+                if (err) {
+                    next(genError(`error logging in`, err.message));
+                }
+
                 let userPayload = genPayload(user);
                 res.status(200).json({
                     message: `User success login`,

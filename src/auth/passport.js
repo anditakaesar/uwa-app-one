@@ -120,7 +120,8 @@ new CustomStrategy(
                         id: decoded.id,
                         username: decoded.username,
                         email: decoded.email
-                    }
+                    };
+                    req.user = user;
                     next(null, user);
                 }
             });
