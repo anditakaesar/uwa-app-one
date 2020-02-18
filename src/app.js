@@ -7,7 +7,7 @@ import logger from './logger';
 import session from 'express-session';
 import { dbconn } from './dbconn';
 import env from './env';
-
+import passport, { strategy } from './auth/passport';
 // dbconn
 import './dbconn';
 
@@ -31,7 +31,12 @@ app.use(session({
     store: new MongoStore({ mongooseConnection: dbconn })
 }));
 
+// initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 // router
+app.use('/checklist', passport.authenticate(strategy.JWT_LOGIN), require('./checklist/checklistRouter').default);
 app.use('/auth', require('./auth/authRouter').default);
 
 // end point for error handling
