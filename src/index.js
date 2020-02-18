@@ -6,4 +6,7 @@ import logger from './logger';
 
 app.listen(env.PORT, () => {
     logger.info(`app started at port: ${env.PORT}`);
+    if (env.NODE_ENV === 'development') {
+        console.table(env);
+    }
 });
