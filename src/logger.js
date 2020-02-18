@@ -1,5 +1,7 @@
 import winston, { format } from 'winston';
 import moment from 'moment';
+import { Loggly } from 'winston-loggly-bulk';
+import env from './env';
 
 const { combine, timestamp, label, printf, metadata } = format;
 const myFormat = printf(info => {
@@ -20,8 +22,7 @@ const myFormat = printf(info => {
 const dateStr = moment().format('YYYY-MM-DD');
 let logger = null;
 
-// if (process.env.NODE_ENV === 'production') {
-if (true) {
+if (process.env.NODE_ENV === 'development') {
     logger = new winston.createLogger({
         transports: [
             new winston.transports.File({ 
@@ -41,6 +42,17 @@ if (true) {
                     myFormat
                 )
             }),
+        ]
+    });
+} else {
+    logger = new winston.createLogger({
+        transports: [
+            new Loggly({
+                token: env.LOGGLY_TOKEN,
+                subdomain: env.LOGGLY_SUBDOMAIN,
+                tags: ['production', env.LOGGLY_TAG],
+                json: true
+            })
         ]
     });
 }
