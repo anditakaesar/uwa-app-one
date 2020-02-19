@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import moment from 'moment';
 const Schema = mongoose.Schema;
 const bcryptjs = require('bcryptjs');
 
@@ -25,7 +26,7 @@ let userSchema = new Schema({
     },
     createdOn: {
         type: Date,
-        default: null
+        default: moment().valueOf()
     },
     createdBy: {
         type: String,
