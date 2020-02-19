@@ -34,10 +34,12 @@ cloudinary.v2.config({
     api_secret: env.CLOUDINARY_API_SECRET
 });
 
-let upload = multer({ storage });
+let multerUpload = multer({ storage });
 let cloudinaryUploader = cloudinary.v2.uploader;
+let cloudinaryApi = cloudinary.v2.api;
 
 export { 
-    upload as multerUploader, 
-    cloudinaryUploader as cloudinaryUploader 
+    multerUpload as multerUploader, 
+    cloudinaryUploader as cloudinaryUploader,
+    cloudinaryApi 
 };
