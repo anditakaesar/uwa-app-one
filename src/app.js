@@ -38,6 +38,7 @@ app.use(passport.session());
 // router
 app.use('/checklist', passport.authenticate(strategy.JWT_LOGIN), require('./checklist/checklistRouter').default);
 app.use('/auth', require('./auth/authRouter').default);
+app.use('/upload', passport.authenticate(strategy.JWT_LOGIN), require('./uploader/uploadRouter').default);
 
 // end point for error handling
 app.use((err, req, res, next) => {
