@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -18,7 +20,7 @@ let checklistSchema = new Schema({
     },
     createdOn: {
         type: Date,
-        default: Date.now()
+        default: moment().valueOf()
     },
     createdBy: {
         type: String,
