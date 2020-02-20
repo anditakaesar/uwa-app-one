@@ -29,7 +29,7 @@ router.get('/:id', (req, res, next) => {
             res.status(200).json({
                 id: req.params.id,
                 mediaImage
-            })
+            });
         });
     });
 }); // router.get(id)
