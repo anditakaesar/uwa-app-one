@@ -32,7 +32,7 @@ function genPayload(user) {
 router.use(checkDbReady);
 
 router.post('/signup', 
-// passport.authenticate(strategy.JWT_LOGIN), 
+passport.authenticate(strategy.JWT_LOGIN), 
 (req, res, next) => {
     passport.authenticate(strategy.LOCAL_SIGNUP, 
     (err, user, info) => { // user -> newUser created
