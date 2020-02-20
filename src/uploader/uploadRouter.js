@@ -31,11 +31,10 @@ router.post('/', multerUploader.single('file'),
                 res.status(201).json({
                     message: `File uploaded!, with name ${cloudinaryResult.original_filename + '.' + cloudinaryResult.format}`,
                     url: cloudinaryResult.secure_url,
-                    result: cloudinaryResult,
                     mediaImage: newEntry
                 });
             }
-        })
+        });
     }
 ); // router.post
 
@@ -63,7 +62,6 @@ function processUpload(req, res, next) {
             } else {
                 logger.info(`Uploaded file to cloudinary`, { public_id: result.public_id, secure_url: result.secure_url });
                 fs.unlink(uploadedFile.path, err => {
-                    let errmsg = '';
                     if (err) {
                         logger.error(`Error while deleting file`, { intmsg: err.message, filepath: uploadedFile.path });
                     }
