@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { checkDbReady } from '../dbconn';
 import Checklist from './checklistModel';
-import { genError } from '../utils';
+import { genError, isBodyValid } from '../utils';
 import logger from '../logger';
 import moment from 'moment';
 
@@ -77,9 +77,14 @@ router.put('/:id', (req, res, next) => {
                     next(genError(`checklist not found`, `checklist with id ${req.params.id} not found`, 404));
                 } else {
                     checklist.description = req.body.description;
+                    checklist.checked = isBodyValid(req.body.checked) ? req.body.checked : checklist.checked;
                     checklist.updatedBy = req.user.id;
                     checklist.updatedOn = moment();
                     checklist.save((err, chk) => {
+                        if (err) {
+                            next(genError(`cannot update checklist`, err.message));
+                        }
+                        
                         res.status(200).json({
                             id: req.params.id,
                             message: `checklist updated`,
