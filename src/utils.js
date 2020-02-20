@@ -5,3 +5,11 @@ export const genError = (message, intmsg, status = 500) => {
 
     return newError;
 }
+
+export const isBodyValid = (value) => {
+    if (value === undefined || value === null || value === '') {
+        return false;
+    } else {
+        return true;
+    }
+}
