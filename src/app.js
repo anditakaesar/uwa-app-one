@@ -39,7 +39,8 @@ app.use(passport.session());
 app.use('/checklist', passport.authenticate(strategy.JWT_LOGIN), require('./checklist/checklistRouter').default);
 app.use('/auth', require('./auth/authRouter').default);
 app.use('/upload', passport.authenticate(strategy.JWT_LOGIN), require('./uploader/uploadRouter').default);
-app.use('/mediaimage', passport.authenticate(strategy.JWT_LOGIN), require('./image/mediaImageRouter').default)
+app.use('/mediaimage', passport.authenticate(strategy.JWT_LOGIN), require('./image/mediaImageRouter').default);
+app.use('/color', passport.authenticate(strategy.JWT_LOGIN), require('./color/colorRouter').default);
 
 // end point for error handling
 app.use((err, req, res, next) => {
