@@ -36,14 +36,14 @@ function createLogger() {
             myFormat,
           ),
         }),
-        new winston.transports.Console({
-          level: 'debug',
-          format: combine(
-            label({ label: 'DEVELOP' }),
-            timestamp(),
-            myFormat,
-          ),
-        }),
+        // new winston.transports.Console({
+        //   level: 'debug',
+        //   format: combine(
+        //     label({ label: 'DEVELOP' }),
+        //     timestamp(),
+        //     myFormat,
+        //   ),
+        // }),
       ],
     })
   }
