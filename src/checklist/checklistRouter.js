@@ -19,7 +19,7 @@ router.post('/', (req, res, next) => {
       if (err) {
         next(genError('cannot create checklist', err.message))
       } else {
-        res.status(200).json({
+        res.status(201).json({
           message: 'checklist created',
           checklist: newChecklist,
         })

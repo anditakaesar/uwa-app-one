@@ -65,8 +65,12 @@ app.use((err, req, res, next) => {
 
 // 404 endpoint
 app.use((req, res) => {
+  let username = 'anonymous'
+  if (req.user) {
+    username = req.user.username
+  }
   logger.warn('request made', {
-    user: req.user.username,
+    user: username,
     ip: req.ip,
     url: req.originalUrl,
   })

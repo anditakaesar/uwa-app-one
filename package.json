@@ -52,6 +52,6 @@
     "build": "npx babel ./src -d ./build",
     "start": "node ./build/index.js",
     "genkeys": "openssl genpkey -algorithm RSA -out private.key -pkeyopt rsa_keygen_bits:4096 && openssl rsa -pubout -in private.key -out public.key",
-    "test": "npx mocha --require @babel/register --timeout 10000"
+    "test": "npx mocha --require @babel/register --timeout 10000 --exit"
   }
 }
