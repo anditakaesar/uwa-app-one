@@ -34,14 +34,14 @@ if (process.env.NODE_ENV === 'development') {
                     myFormat
                 )
             }),
-            new winston.transports.Console({
-                level: 'debug',
-                format: combine(
-                    label({ label: 'DEVELOP' }),
-                    timestamp(),
-                    myFormat
-                )
-            }),
+            // new winston.transports.Console({
+            //     level: 'debug',
+            //     format: combine(
+            //         label({ label: 'DEVELOP' }),
+            //         timestamp(),
+            //         myFormat
+            //     )
+            // }),
         ]
     });
 } else {
