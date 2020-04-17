@@ -32,7 +32,9 @@ const productSchema = new Schema({
     default: 0,
   },
   colors: {
-    type: [String],
+    type: [new Schema({
+      name: String, value: String,
+    }, { _id: false})]
   },
   createdon: {
     type: Date,
