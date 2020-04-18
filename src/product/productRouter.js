@@ -2,10 +2,11 @@ import { Router } from 'express'
 import moment from 'moment'
 import Product from './productModel'
 import { genError, isBodyValid } from '../utils'
+import passport, { strategy } from '../auth/passport'
 
 const router = Router()
 
-router.post('/', (req, res, next) => {
+router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     const newProduct = new Product()
     newProduct.name = req.body.name
@@ -64,7 +65,7 @@ router.get('/:id', (req, res, next) => {
   })
 }) // router.get id
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     const {
       name, imgurl, description, price, category, stock, colors,
@@ -103,7 +104,7 @@ router.put('/:id', (req, res, next) => {
   })
 }) // router.put id
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     Product.findOneAndDelete({ _id: req.params.id }, (err, product) => {
       if (err) {
