@@ -2,10 +2,11 @@ import { Router } from 'express'
 import moment from 'moment'
 import Color from './colorModel'
 import { genError, isBodyValid } from '../utils'
+import passport, { strategy }  from '../auth/passport'
 
 const router = Router()
 
-router.post('/', (req, res, next) => {
+router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     const newColor = new Color()
     newColor.name = req.body.name
@@ -60,7 +61,7 @@ router.get('/:id', (req, res, next) => {
   })
 }) // router.get/:id
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     Color.findById(req.params.id, (err, color) => {
       if (err) {
@@ -89,7 +90,7 @@ router.put('/:id', (req, res, next) => {
   })
 }) // router.put
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
     Color.findOneAndDelete({ _id: req.params.id }, (err, color) => {
       if (err) {
