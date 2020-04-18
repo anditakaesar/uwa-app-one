@@ -109,7 +109,6 @@ describe('Color endpoint test', () => {
         chai.request(app)
           .get('/color')
           .set('Content-Type', 'application/json')
-          .set('Authorization', token)
           .end((err, response) => {
             res = response
             res.body.should.be.a('object')
@@ -141,7 +140,6 @@ describe('Color endpoint test', () => {
         chai.request(app)
           .get(`/color/${color.id}`)
           .set('Content-Type', 'application/json')
-          .set('Authorization', token)
           .end((err, response) => {
             res = response
             res.body.should.be.a('object')

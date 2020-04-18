@@ -42,7 +42,7 @@ app.use('/checklist', passport.authenticate(strategy.JWT_LOGIN), require('./chec
 app.use('/auth', require('./auth/authRouter').default)
 app.use('/upload', passport.authenticate(strategy.JWT_LOGIN), require('./uploader/uploadRouter').default)
 app.use('/mediaimage', passport.authenticate(strategy.JWT_LOGIN), require('./image/mediaImageRouter').default)
-app.use('/color', passport.authenticate(strategy.JWT_LOGIN), require('./color/colorRouter').default)
+app.use('/color', require('./color/colorRouter').default)
 app.use('/product', passport.authenticate(strategy.JWT_LOGIN), require('./product/productRouter').default)
 
 // end point for error handling
