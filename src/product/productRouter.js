@@ -13,18 +13,28 @@ router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => 
     newProduct.imgurl = req.body.imgurl
     newProduct.description = req.body.description
     newProduct.price = req.body.price
-    newProduct.category = req.body.category
+    if (req.body.category) {
+      newProduct.category = req.body.category
+    } else {
+      newProduct.category = 'uncategorized'
+    }
     newProduct.stock = req.body.stock
-    newProduct.colors = req.body.colors
+    if (req.body.colors) {
+      newProduct.colors = req.body.colors
+    } else {
+      newProduct.colors = [{
+        name: 'default', value: '#ff00ee',
+      }]
+    }
     newProduct.createdby = req.user.id
 
-    newProduct.save((err) => {
+    newProduct.save((err, createdProduct) => {
       if (err) {
         next(genError('cannot create new product', err.message))
       } else {
         res.status(201).json({
           message: 'new product created',
-          product: newProduct,
+          product: createdProduct,
         })
       }
     })
