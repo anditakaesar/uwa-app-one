@@ -11,10 +11,10 @@ const router = Router()
 function genToken(payload) {
   const signOptions = {
     expiresIn: env.JWT_EXPSEC,
-    algorithm: 'HS256',
+    algorithm: env.JWT_ALGORITHM,
   }
 
-  const token = jwt.sign(payload, keys.public, signOptions)
+  const token = jwt.sign(payload, keys.private, signOptions)
   return token
 }
 

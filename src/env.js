@@ -3,6 +3,7 @@ export const PORT = parseInt(process.env.PORT, 10) || 3000
 export const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost'
 export const MONGODB_NAME = process.env.MONGODB_NAME || 'uwaappone-test'
 export const JWT_EXPSEC = parseInt(process.env.JWT_EXPSEC, 10) || 120
+export const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256'
 export const SESSION_NAME = process.env.SESSION_NAME || 'session-name'
 export const COOKIES_SECRET = process.env.COOKIES_SECRET || 'secret'
 export const COOKIES_AGESEC = parseInt(process.env.COOKIES_AGESEC, 10) || 86400
@@ -22,6 +23,7 @@ export const env = {
   MONGODB_URI,
   MONGODB_NAME,
   JWT_EXPSEC,
+  JWT_ALGORITHM,
   SESSION_NAME,
   COOKIES_SECRET,
   COOKIES_AGESEC,
