@@ -13,7 +13,11 @@ router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => 
     newProduct.imgurl = req.body.imgurl
     newProduct.description = req.body.description
     newProduct.price = req.body.price
-    newProduct.category = req.body.category
+    if (req.body.category) {
+      newProduct.category = req.body.category
+    } else {
+      newProduct.category = 'uncategorized'
+    }
     newProduct.stock = req.body.stock
     if (req.body.colors) {
       newProduct.colors = req.body.colors
