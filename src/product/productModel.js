@@ -23,8 +23,8 @@ const productSchema = new Schema({
     default: 0,
   },
   category: {
-    type: [String],
-    default: ['uncategorized'],
+    type: String,
+    default: 'uncategorized',
     trim: true,
   },
   stock: {
@@ -34,7 +34,8 @@ const productSchema = new Schema({
   colors: {
     type: [new Schema({
       name: String, value: String,
-    }, { _id: false})]
+    }, { _id: false})],
+    default: [{ name: "default", value: "#ff00ff"}]
   },
   createdon: {
     type: Date,
