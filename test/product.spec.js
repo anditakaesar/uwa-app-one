@@ -19,8 +19,24 @@ describe('Product endpoint test', () => {
   let product
   let user
   const appjson = 'application/json; charset=utf-8'
-  // const newproduct
-  // const editedproduct
+  const newproduct = {
+    name: 'test product',
+    imgurl: 'https://test.com/img.jpg',
+    description: 'a test product',
+    price: 100,
+    category: 'test category',
+    stock: 10,
+    colors: [{ name: 'default', value: '#ff00ff'}],
+  }
+  const editedproduct = {
+    name: 'edited product',
+    imgurl: 'https://test.com/img.jpg',
+    description: 'a test edited product',
+    price: 100,
+    category: 'test category',
+    stock: 10,
+    colors: [{ name: 'default', value: '#ff00ff'}],
+  }
 
   before((done) => {
     chai.request(app)
@@ -38,18 +54,83 @@ describe('Product endpoint test', () => {
       })
   })
 
-  // after((done) => {
-  //   chai.request(app)
-  //     .delete(`/product/${product.id}`)
-  //     .set('Content-Type', 'application/json')
-  //     .set('Authorization', token)
-  //     .send()
-  //     .end((err, response) => {
-  //       done()
-  //     })
-  // })
+  after((done) => {
+    chai.request(app)
+      .delete(`/product/${product.id}`)
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .send()
+      .end((err, response) => {
+        done()
+      })
+  })
 
   // CREATE
+  describe('POST /product', () => {
+    describe('create product UNAUTHORIZED', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .post('/product')
+          .set('Content-Type', 'application/json')
+          .send({})
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            done()
+          })
+      })
+
+      it('return 401 code', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(401)
+        done()
+      })
+    })
+
+    describe('create product AUHTORIZED', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .post('/product')
+          .set('Content-Type', 'application/json')
+          .set('Authorization', token)
+          .send(newproduct)
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            done()
+          })
+      })
+
+      it('return 201 code', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(201)
+        done()
+      })
+
+      it('return json content-type', (done) => {
+        res.headers['content-type'].should.be.a('string')
+        res.headers['content-type'].should.be.equal(appjson)
+        done()
+      })
+
+      it('return same createby', (done) => {
+        product.createdby.should.be.equal(user.id)
+        done()
+      })
+
+      it('return same as posted', (done) => {
+        product.name.should.be.equal(newproduct.name)
+        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.description.should.be.equal(newproduct.description)
+        product.price.should.be.equal(newproduct.price)
+        product.category.should.be.equal(newproduct.category)
+        product.stock.should.be.equal(newproduct.stock)
+        done()
+      })
+    }) // create product authorized
+  })
   // READ
   describe('GET /product', () => {
     describe('get all product', () => {
@@ -71,5 +152,10 @@ describe('Product endpoint test', () => {
       })
     })
   }) // GET /product
+
+  // UPDATE
+  // describe('PUT /product', () => {
+    
+  // })
 
 }) // end product endpoint test
