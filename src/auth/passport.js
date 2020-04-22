@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { keys } from './signopt'
 import logger from '../logger'
 import User from '../user/userModel'
+import env from '../env'
 
 export const strategy = {
   LOCAL_LOGIN: 'local-login',
@@ -107,7 +108,7 @@ passport.use(strategy.JWT_LOGIN,
   new CustomStrategy(
     (req, next) => {
       process.nextTick(() => {
-        jwt.verify(req.headers.authorization, keys.public, { algorithms: 'HS256' },
+        jwt.verify(req.headers.authorization, keys.public, { algorithms: env.JWT_ALGORITHM },
           (err, decoded) => {
             if (err) {
               next(null, false, { message: err.message })
