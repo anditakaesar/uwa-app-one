@@ -31,12 +31,12 @@ describe('Product endpoint test', () => {
   }
   const editedproduct = {
     name: 'edited product',
-    imgurl: 'https://test.com/img.jpg',
+    imgurl: 'https://test.com/imgx.jpg',
     description: 'a test edited product',
-    price: 100,
-    category: 'test category',
-    stock: 10,
-    colors: [{ name: 'default', value: '#ff00ff'}],
+    price: 102,
+    category: 'change category',
+    stock: 20,
+    colors: [{ name: 'new', value: '#ff00ee'}],
   }
 
   before((done) => {
@@ -198,8 +198,43 @@ describe('Product endpoint test', () => {
   }) // GET /product
 
   // UPDATE
-  // describe('PUT /product', () => {
-    
-  // })
+  describe('PUT /product', () => {
+    it('return body', (done) => {
+      chai.request(app)
+        .put(`/product/${productid}`)
+        .set('Content-Type', 'application/json')
+        .set('Authorization', token)
+        .send(editedproduct)
+        .end((err, response) => {
+          res = response
+          res.body.should.be.a('object')
+          product = res.body.product
+          // no need to set id
+          done()
+        })
+    })
+
+    it('return correct response header', (done) => {
+      res.statusCode.should.be.a('number')
+      res.statusCode.should.be.equal(200)
+      res.headers['content-type'].should.be.a('string')
+      res.headers['content-type'].should.be.equal(appjson)
+      done()
+    })
+
+    it('return correct response body', (done) => {
+      product.id.should.be.equal(productid)
+      product.name.should.be.equal(editedproduct.name)
+      product.imgurl.should.be.equal(editedproduct.imgurl)
+      product.description.should.be.equal(editedproduct.description)
+      product.price.should.be.equal(editedproduct.price)
+      product.category.should.be.equal(editedproduct.category)
+      product.stock.should.be.equal(editedproduct.stock)
+      product.colors.should.be.a('array')
+      product.colors[0].name.should.be.equal(editedproduct.colors[0].name)
+      product.colors[0].value.should.be.equal(editedproduct.colors[0].value)
+      done()
+    })
+  }) // PUT /product
 
 }) // end product endpoint test
