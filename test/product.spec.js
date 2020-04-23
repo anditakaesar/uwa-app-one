@@ -17,6 +17,7 @@ describe('Product endpoint test', () => {
   let token
   let res
   let product
+  let productid
   let user
   const appjson = 'application/json; charset=utf-8'
   const newproduct = {
@@ -56,7 +57,7 @@ describe('Product endpoint test', () => {
 
   after((done) => {
     chai.request(app)
-      .delete(`/product/${product.id}`)
+      .delete(`/product/${productid}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', token)
       .send()
@@ -86,7 +87,7 @@ describe('Product endpoint test', () => {
         res.statusCode.should.be.equal(401)
         done()
       })
-    })
+    }) // product UNAUTHORIZED
 
     describe('create product AUHTORIZED', () => {
       it('return body', (done) => {
@@ -99,6 +100,7 @@ describe('Product endpoint test', () => {
             res = response
             res.body.should.be.a('object')
             product = res.body.product
+            productid = res.body.product.id
             done()
           })
       })
@@ -127,6 +129,9 @@ describe('Product endpoint test', () => {
         product.price.should.be.equal(newproduct.price)
         product.category.should.be.equal(newproduct.category)
         product.stock.should.be.equal(newproduct.stock)
+        product.colors.should.be.a('array')
+        product.colors[0].name.should.be.equal(newproduct.colors[0].name)
+        product.colors[0].value.should.be.equal(newproduct.colors[0].value)
         done()
       })
     }) // create product authorized
@@ -150,7 +155,46 @@ describe('Product endpoint test', () => {
         res.statusCode.should.be.equal(200)
         done()
       })
-    })
+    }) // all product
+
+    describe('get single product', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .get(`/product/${productid}`)
+          .set('Content-Type', 'application/json')
+          .set('Authorization', token)
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            // no need to set id
+            done()
+          })
+      })
+
+      it('return correct response header', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(200)
+        res.headers['content-type'].should.be.a('string')
+        res.headers['content-type'].should.be.equal(appjson)
+        done()
+      })
+
+      it('return correct response body', (done) => {
+        product.id.should.be.equal(productid)
+        product.name.should.be.equal(newproduct.name)
+        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.description.should.be.equal(newproduct.description)
+        product.price.should.be.equal(newproduct.price)
+        product.category.should.be.equal(newproduct.category)
+        product.stock.should.be.equal(newproduct.stock)
+        product.colors.should.be.a('array')
+        product.colors[0].name.should.be.equal(newproduct.colors[0].name)
+        product.colors[0].value.should.be.equal(newproduct.colors[0].value)
+        done()
+      })
+    }) // single product
+
   }) // GET /product
 
   // UPDATE
