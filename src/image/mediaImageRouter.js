@@ -1,23 +1,58 @@
 import { Router } from 'express'
-import MediaImage from './mediaImageModel'
+import MediaImage, { addTransform } from './mediaImageModel'
 import { genError } from '../utils'
 import { cloudinaryApi } from '../uploader/multerUploader'
+import { getAllProduct } from '../product/productRouter'
 
 const router = Router()
 
-router.get('/', (req, res, next) => {
+function getAllMediaImage(req, res, next) {
   process.nextTick(() => {
     MediaImage.find({}, (err, mediaImages) => {
       if (err) {
         next(genError('Error retrieving ', err.message))
       }
 
-      res.status(200).json({
-        mediaImages,
-      })
+      res.mediaImages = mediaImages
+      next()
     })
   })
+}
+
+router.use((req, res, next) => {
+  res.mediaImages = []
+  res.products = []
+  next()
+})
+
+router.get('/', getAllMediaImage, (req, res, next) => {
+  res.status(200).json({
+    mediaImages: res.mediaImages,
+  })
 }) // router.get
+
+router.get('/orphan', getAllMediaImage, getAllProduct, (req, res) => {
+  const thumb_urls = []
+  res.mediaImages.forEach((m) => {
+    thumb_urls.push({
+      imgurl: addTransform(m.secure_url),
+      public_id: m.public_id,
+    })
+  })
+
+  const result = thumb_urls.filter((t) => {
+    return !(res.products.filter((p) => { return p.imgurl === t.imgurl }).length > 0)
+  })
+
+  const public_ids = []
+  result.forEach((r) => public_ids.push(r.public_id))
+
+  res.status(200).json({
+    message: 'orphan files',
+    public_ids,
+    result,
+  })
+})
 
 router.get('/:id', (req, res, next) => {
   process.nextTick(() => {

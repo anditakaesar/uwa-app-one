@@ -47,7 +47,7 @@ const mediaImageSchema = new Schema({
   },
 })
 
-function addTransform(secureUrl) {
+export function addTransform(secureUrl) {
   const arr = secureUrl.split('/')
   const i = arr.indexOf('upload') + 1
   arr.splice(i, 0, 'c_scale,w_300')
