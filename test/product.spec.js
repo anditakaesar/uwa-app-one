@@ -17,10 +17,27 @@ describe('Product endpoint test', () => {
   let token
   let res
   let product
+  let productid
   let user
   const appjson = 'application/json; charset=utf-8'
-  // const newproduct
-  // const editedproduct
+  const newproduct = {
+    name: 'test product',
+    imgurl: 'https://test.com/img.jpg',
+    description: 'a test product',
+    price: 100,
+    category: 'test category',
+    stock: 10,
+    colors: [{ name: 'default', value: '#ff00ff'}],
+  }
+  const editedproduct = {
+    name: 'edited product',
+    imgurl: 'https://test.com/imgx.jpg',
+    description: 'a test edited product',
+    price: 102,
+    category: 'change category',
+    stock: 20,
+    colors: [{ name: 'new', value: '#ff00ee'}],
+  }
 
   before((done) => {
     chai.request(app)
@@ -38,18 +55,87 @@ describe('Product endpoint test', () => {
       })
   })
 
-  // after((done) => {
-  //   chai.request(app)
-  //     .delete(`/product/${product.id}`)
-  //     .set('Content-Type', 'application/json')
-  //     .set('Authorization', token)
-  //     .send()
-  //     .end((err, response) => {
-  //       done()
-  //     })
-  // })
+  after((done) => {
+    chai.request(app)
+      .delete(`/product/${productid}`)
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .send()
+      .end((err, response) => {
+        done()
+      })
+  })
 
   // CREATE
+  describe('POST /product', () => {
+    describe('create product UNAUTHORIZED', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .post('/product')
+          .set('Content-Type', 'application/json')
+          .send({})
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            done()
+          })
+      })
+
+      it('return 401 code', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(401)
+        done()
+      })
+    }) // product UNAUTHORIZED
+
+    describe('create product AUHTORIZED', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .post('/product')
+          .set('Content-Type', 'application/json')
+          .set('Authorization', token)
+          .send(newproduct)
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            productid = res.body.product.id
+            done()
+          })
+      })
+
+      it('return 201 code', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(201)
+        done()
+      })
+
+      it('return json content-type', (done) => {
+        res.headers['content-type'].should.be.a('string')
+        res.headers['content-type'].should.be.equal(appjson)
+        done()
+      })
+
+      it('return same createby', (done) => {
+        product.createdby.should.be.equal(user.id)
+        done()
+      })
+
+      it('return same as posted', (done) => {
+        product.name.should.be.equal(newproduct.name)
+        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.description.should.be.equal(newproduct.description)
+        product.price.should.be.equal(newproduct.price)
+        product.category.should.be.equal(newproduct.category)
+        product.stock.should.be.equal(newproduct.stock)
+        product.colors.should.be.a('array')
+        product.colors[0].name.should.be.equal(newproduct.colors[0].name)
+        product.colors[0].value.should.be.equal(newproduct.colors[0].value)
+        done()
+      })
+    }) // create product authorized
+  })
   // READ
   describe('GET /product', () => {
     describe('get all product', () => {
@@ -69,7 +155,86 @@ describe('Product endpoint test', () => {
         res.statusCode.should.be.equal(200)
         done()
       })
-    })
+    }) // all product
+
+    describe('get single product', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .get(`/product/${productid}`)
+          .set('Content-Type', 'application/json')
+          .set('Authorization', token)
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            product = res.body.product
+            // no need to set id
+            done()
+          })
+      })
+
+      it('return correct response header', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(200)
+        res.headers['content-type'].should.be.a('string')
+        res.headers['content-type'].should.be.equal(appjson)
+        done()
+      })
+
+      it('return correct response body', (done) => {
+        product.id.should.be.equal(productid)
+        product.name.should.be.equal(newproduct.name)
+        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.description.should.be.equal(newproduct.description)
+        product.price.should.be.equal(newproduct.price)
+        product.category.should.be.equal(newproduct.category)
+        product.stock.should.be.equal(newproduct.stock)
+        product.colors.should.be.a('array')
+        product.colors[0].name.should.be.equal(newproduct.colors[0].name)
+        product.colors[0].value.should.be.equal(newproduct.colors[0].value)
+        done()
+      })
+    }) // single product
+
   }) // GET /product
+
+  // UPDATE
+  describe('PUT /product', () => {
+    it('return body', (done) => {
+      chai.request(app)
+        .put(`/product/${productid}`)
+        .set('Content-Type', 'application/json')
+        .set('Authorization', token)
+        .send(editedproduct)
+        .end((err, response) => {
+          res = response
+          res.body.should.be.a('object')
+          product = res.body.product
+          // no need to set id
+          done()
+        })
+    })
+
+    it('return correct response header', (done) => {
+      res.statusCode.should.be.a('number')
+      res.statusCode.should.be.equal(200)
+      res.headers['content-type'].should.be.a('string')
+      res.headers['content-type'].should.be.equal(appjson)
+      done()
+    })
+
+    it('return correct response body', (done) => {
+      product.id.should.be.equal(productid)
+      product.name.should.be.equal(editedproduct.name)
+      product.imgurl.should.be.equal(editedproduct.imgurl)
+      product.description.should.be.equal(editedproduct.description)
+      product.price.should.be.equal(editedproduct.price)
+      product.category.should.be.equal(editedproduct.category)
+      product.stock.should.be.equal(editedproduct.stock)
+      product.colors.should.be.a('array')
+      product.colors[0].name.should.be.equal(editedproduct.colors[0].name)
+      product.colors[0].value.should.be.equal(editedproduct.colors[0].value)
+      done()
+    })
+  }) // PUT /product
 
 }) // end product endpoint test

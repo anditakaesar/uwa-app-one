@@ -65,6 +65,30 @@ describe('Color endpoint test', () => {
         chai.request(app)
           .post('/color')
           .set('Content-Type', 'application/json')
+          .send({
+            name: newcolor.name,
+            value: newcolor.value,
+          })
+          .end((err, response) => {
+            res = response
+            res.body.should.be.a('object')
+            color = res.body.color
+            done()
+          })
+      })
+
+      it('return 401 code', (done) => {
+        res.statusCode.should.be.a('number')
+        res.statusCode.should.be.equal(401)
+        done()
+      })
+    })
+
+    describe('create color AUTHORIZED', () => {
+      it('return body', (done) => {
+        chai.request(app)
+          .post('/color')
+          .set('Content-Type', 'application/json')
           .set('Authorization', token)
           .send({
             name: newcolor.name,
