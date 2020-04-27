@@ -3,8 +3,27 @@ import moment from 'moment'
 import Product from './productModel'
 import { genError, isBodyValid } from '../utils'
 import passport, { strategy } from '../auth/passport'
+import MediaImage from '../image/mediaImageModel'
 
 const router = Router()
+
+export function getAllProduct(req, res, next) {
+  process.nextTick(() => {
+    Product.find({}, (err, products) => {
+      if (err) {
+        next(genError('cannot retrieve all products', err.message, 404))
+      }
+
+      res.products = products
+      next()
+    })
+  })
+}
+
+router.use((req, res, next) => {
+  res.products = []
+  next()
+})
 
 router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => {
   process.nextTick(() => {
@@ -41,18 +60,10 @@ router.post('/', passport.authenticate(strategy.JWT_LOGIN), (req, res, next) => 
   })
 }) // router.post
 
-router.get('/', (req, res, next) => {
-  process.nextTick(() => {
-    Product.find({}, (err, products) => {
-      if (err) {
-        next(genError('cannot retrieve all products', err.message, 404))
-      } else {
-        res.status(200).json({
-          message: 'all products',
-          products,
-        })
-      }
-    })
+router.get('/', getAllProduct, (req, res, next) => {
+  res.status(200).json({
+    message: 'all products',
+    products: res.products,
   })
 }) // router.get
 
