@@ -22,7 +22,7 @@ describe('Product endpoint test', () => {
   const appjson = 'application/json; charset=utf-8'
   const newproduct = {
     name: 'test product',
-    imgurl: 'https://test.com/img.jpg',
+    imgurl: [{ public_id: 'some-id', url:'https://test.com/img.jpg'}],
     description: 'a test product',
     price: 100,
     category: 'test category',
@@ -31,7 +31,7 @@ describe('Product endpoint test', () => {
   }
   const editedproduct = {
     name: 'edited product',
-    imgurl: 'https://test.com/imgx.jpg',
+    imgurl: [{ public_id: 'some-idnew', url:'https://test.com/img.jpg'}],
     description: 'a test edited product',
     price: 102,
     category: 'change category',
@@ -124,7 +124,9 @@ describe('Product endpoint test', () => {
 
       it('return same as posted', (done) => {
         product.name.should.be.equal(newproduct.name)
-        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.imgurl.should.be.a('array')
+        product.imgurl[0].public_id.should.be.equal(newproduct.imgurl[0].public_id)
+        product.imgurl[0].url.should.be.equal(newproduct.imgurl[0].url)
         product.description.should.be.equal(newproduct.description)
         product.price.should.be.equal(newproduct.price)
         product.category.should.be.equal(newproduct.category)
@@ -183,7 +185,9 @@ describe('Product endpoint test', () => {
       it('return correct response body', (done) => {
         product.id.should.be.equal(productid)
         product.name.should.be.equal(newproduct.name)
-        product.imgurl.should.be.equal(newproduct.imgurl)
+        product.imgurl.should.be.a('array')
+        product.imgurl[0].public_id.should.be.equal(newproduct.imgurl[0].public_id)
+        product.imgurl[0].url.should.be.equal(newproduct.imgurl[0].url)
         product.description.should.be.equal(newproduct.description)
         product.price.should.be.equal(newproduct.price)
         product.category.should.be.equal(newproduct.category)
@@ -225,7 +229,9 @@ describe('Product endpoint test', () => {
     it('return correct response body', (done) => {
       product.id.should.be.equal(productid)
       product.name.should.be.equal(editedproduct.name)
-      product.imgurl.should.be.equal(editedproduct.imgurl)
+      product.imgurl.should.be.a('array')
+      product.imgurl[0].public_id.should.be.equal(editedproduct.imgurl[0].public_id)
+      product.imgurl[0].url.should.be.equal(editedproduct.imgurl[0].url)
       product.description.should.be.equal(editedproduct.description)
       product.price.should.be.equal(editedproduct.price)
       product.category.should.be.equal(editedproduct.category)
