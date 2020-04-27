@@ -11,8 +11,9 @@ const productSchema = new Schema({
     trim: true,
   },
   imgurl: {
-    type: String,
-    trim: true,
+    type: [new Schema({
+      public_id: String, url: String,
+    }, { _id: false})],
   },
   description: {
     type: String,
